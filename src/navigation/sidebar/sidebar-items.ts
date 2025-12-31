@@ -8,6 +8,7 @@ import {
   GraduationCap,
   Kanban,
   LayoutDashboard,
+  Link2,
   Lock,
   type LucideIcon,
   Mail,
@@ -134,6 +135,11 @@ export const sidebarItems: NavGroup[] = [
         url: "/dashboard/coming-soon",
         icon: Lock,
         comingSoon: true,
+      },
+      {
+        title: "链接卡片",
+        url: "/dashboard/links",
+        icon: Link2,
       },
       {
         title: "Authentication",
