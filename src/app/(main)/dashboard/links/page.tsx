@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 
 import clsx from "clsx";
-import { Filter, Search, X } from "lucide-react";
+import { Download, Filter, Search, X } from "lucide-react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -155,6 +156,55 @@ export default function LinksPage() {
       }
     }
   }
+
+  const handleExport = async () => {
+    if (selectedCount === 0) {
+      toast.error("请先选择要导出的链接");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      // 提取所有选中的链接
+      const selectedLinks: { name: string; url: string }[] = [];
+      groups.forEach((group) => {
+        group.links.forEach((link) => {
+          if (link.selected) {
+            selectedLinks.push({ name: link.name, url: link.url });
+          }
+        });
+      });
+
+      const response = await fetch("/api/export-ros", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ links: selectedLinks }),
+      });
+
+      if (!response.ok) {
+        throw new Error("导出失败");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "lilibox-export.rsc";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success("导出成功！脚本已开始下载。");
+    } catch (err) {
+      console.error("Export failed:", err);
+      toast.error("导出过程中出现错误，请稍后重试。");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -696,6 +746,32 @@ export default function LinksPage() {
               );
             })
           )}
+        </div>
+      )}
+      {/* Floating Export Button */}
+      {selectedCount > 0 && (
+        <div className="fixed bottom-8 right-8 z-50 animate-in fade-in slide-in-from-bottom-10 duration-500">
+          <Button
+            onClick={handleExport}
+            disabled={saving}
+            className={clsx(
+              "h-16 px-8 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 group",
+              "bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 text-white font-bold text-lg border-2 border-white/20",
+              "hover:shadow-[0_0_30px_rgba(147,51,234,0.5)]",
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <Download
+                className={clsx(
+                  "h-6 w-6 transition-transform duration-300 group-hover:-translate-y-1",
+                  saving && "animate-bounce",
+                )}
+              />
+              <span>导出 ROS 脚本 ({selectedCount})</span>
+            </div>
+            {/* Pulse Effect Background */}
+            <div className="absolute inset-0 rounded-full bg-white/20 animate-ping opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+          </Button>
         </div>
       )}
     </div>
