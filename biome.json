@@ -31,7 +31,18 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!.github", "!.husky", "!node_modules", "!.next", "!dist", "!out", "!src/components/ui"]
+    "includes": [
+      "**",
+      "!.github",
+      "!.husky",
+      "!node_modules",
+      "!.next",
+      "!dist",
+      "!out",
+      "!src/components/ui",
+      "!test-api.js",
+      "!test-real-api.js"
+    ]
   },
   "formatter": {
     "enabled": true,

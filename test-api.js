@@ -14,37 +14,37 @@ const testMarkdown = `
 
 function parseMarkdownTables(markdown) {
   const groups = [];
-  
-  const lines = markdown.split('\n');
-  
+
+  const lines = markdown.split("\n");
+
   let currentGroup = null;
   let inTable = false;
   let headerProcessed = false;
-  
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    
-    if (line.startsWith('|') && line.endsWith('|')) {
+
+    if (line.startsWith("|") && line.endsWith("|")) {
       const cells = line
-        .split('|')
+        .split("|")
         .slice(1, -1)
-        .map(cell => cell.trim());
-      
-      if (cells.every(cell => /^[-:\s]+$/.test(cell))) {
+        .map((cell) => cell.trim());
+
+      if (cells.every((cell) => /^[-:\s]+$/.test(cell))) {
         inTable = true;
         headerProcessed = true;
         continue;
       }
-      
+
       if (!inTable) {
         if (cells.length > 0 && cells[0]) {
           if (currentGroup && currentGroup.links.length > 0) {
             groups.push(currentGroup);
           }
-          
+
           currentGroup = {
             name: cells[0],
-            links: []
+            links: [],
           };
         }
         inTable = false;
@@ -53,28 +53,28 @@ function parseMarkdownTables(markdown) {
         for (const cell of cells) {
           const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
           let match;
-          
+
           while ((match = linkRegex.exec(cell)) !== null) {
             const [, name, url] = match;
             if (name && url) {
               currentGroup.links.push({
                 name: name.trim(),
-                url: url.trim()
+                url: url.trim(),
               });
             }
           }
         }
       }
-    } else if (inTable && line === '') {
+    } else if (inTable && line === "") {
       inTable = false;
       headerProcessed = false;
     }
   }
-  
+
   if (currentGroup && currentGroup.links.length > 0) {
     groups.push(currentGroup);
   }
-  
+
   return groups;
 }
 
