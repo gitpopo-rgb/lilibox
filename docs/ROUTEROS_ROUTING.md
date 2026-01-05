@@ -168,7 +168,39 @@ Before running the generated script, you need to set the following variables:
 - The configuration uses policy-based routing to ensure only traffic to/from specific addresses uses the VPN gateway
 - All other traffic continues to use the default internet connection
 - DNS resolution for VPN domains is forwarded to a separate DNS server to avoid DNS leaks
-- The script is idempotent but may create duplicates if run multiple times. Clean up old rules before re-importing.
+- **Important**: The script is NOT idempotent. Running it multiple times will create duplicate rules and may cause errors.
+
+## Cleanup Before Re-importing
+
+If you need to re-import the script (e.g., after updating rule lists), clean up the old configuration first:
+
+```routeros
+# Remove old routing infrastructure
+/routing table remove [find name=vpn_table]
+/ip firewall mangle remove [find comment~"VPN"]
+/ip route remove [find comment~"VPN"]
+/routing rule remove [find comment~"VPN"]
+
+# Remove old DNS and address list entries
+/ip dns static remove [find comment~"vpn-dns"]
+/ip firewall address-list remove [find list=vpn_list]
+```
+
+After cleanup, you can safely re-import the updated script.
+
+## Customizing the Gateway
+
+The default gateway is set to 10.10.10.17. To use a different gateway:
+
+1. Edit the exported `.rsc` file before importing
+2. Change the line:
+   ```routeros
+   :global vpn_gateway "10.10.10.17"
+   ```
+3. Update it to your desired gateway IP:
+   ```routeros
+   :global vpn_gateway "YOUR.GATEWAY.IP.HERE"
+   ```
 
 ## Troubleshooting
 
