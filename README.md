@@ -21,6 +21,7 @@ I’ve taken design inspiration from various sources. If you’d like credit for
 - Flexible layouts (collapsible sidebar, variable content widths)  
 - Authentication flows and screens  
 - Prebuilt dashboards (Default, CRM, Finance) with more coming soon  
+- **RouterOS Script Export**: Generate RouterOS configuration scripts with policy-based routing
 - Role-Based Access Control (RBAC) with config-driven UI and multi-tenant support *(planned)*  
 
 > [!NOTE]
@@ -111,6 +112,19 @@ _Deploy your own copy with one click._
    ```
 
 Your app will be running at [http://localhost:3000](http://localhost:3000)
+
+### RouterOS Export Feature
+
+This application includes a RouterOS script export feature that generates policy-based routing configuration for MikroTik RouterOS devices. 
+
+**Key Features:**
+- Converts Clash rule lists to RouterOS scripts
+- Automatically creates routing tables and mangle rules
+- Routes traffic through a specified gateway (e.g., VPN gateway 10.10.10.17)
+- Supports DNS forwarding and static DNS entries
+- Generates IP address lists from CIDR rules
+
+For detailed documentation on the RouterOS routing configuration, see [docs/ROUTEROS_ROUTING.md](docs/ROUTEROS_ROUTING.md).
 
 ### Formatting and Linting
 
